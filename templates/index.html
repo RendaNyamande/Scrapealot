@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% endblock %}
+{% block body%}
+<h1>Template</h1>
+<li>
+    {% for task in tasks %}
+    <ol>{{ task.name }} => {{ task.date_created.date() }}</ol>
+    {% endfor %}
+</li>
+{% endblock %}
