@@ -14,6 +14,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import time as t
 
+class Product:
+    def __init__(self, name, price):
+        self.name = name
+        self.price = price
+    def toString(self):
+        return self.name+" => "+str(self.price)
+
 os.environ['PATH'] += r"C:\Users\renda\OneDrive\Documents\CsEandeavours\SeleniumDrivers"
 # driver = webdriver.Chrome()
 
@@ -61,7 +68,12 @@ def scrollClick(n):
                     price = spanTag.string[2:]
                 except:
                     price = "Price unavailable"
-                product = [name+"\n"+price]
+                if(name is None):
+                    name = "Name unavailable"
+                if(price is None):
+                    price = "Price unavailable"
+                # product = [name+"\n"+price]
+                product = [Product(name,price)]
                 allProducts += product
                 f = open("output.txt", "a")
                 f.write(name+" => "+"R"+price+"\n")
@@ -75,7 +87,7 @@ def scrollClick(n):
 
             #Scroll to bottom
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            t.sleep(5)
+            # t.sleep(5)
 
             #Click
             WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.button.ghost.search-listings-module_load-more_OwyvW"))).click()
@@ -104,14 +116,20 @@ def scrollClick(n):
                     price = spanTag.string[2:]
                 except:
                     price = "Price unavailable"
-                product = [name+"\n"+price]
+                if(name is None):
+                    name = "Name unavailable"
+                if(price is None):
+                    price = "Price unavailable"
+                # product = [name+"\n"+price]
+                product = [Product(name,price)]
                 allProducts += product
                 f = open("output.txt", "a")
                 f.write(name+" => "+"R"+price+"\n")
                 f.close()
                 print("Product "+str(iterator)+ " added.")
                 iterator += 1
-scrollClick(3)
+scrollClick(1)
 print(str(len(allProducts))+" products added.")
+print(allProducts[len(allProducts)-1].toString())
 
 driver.close()
