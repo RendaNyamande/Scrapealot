@@ -26,7 +26,16 @@ os.environ['PATH'] += r"C:\Users\renda\OneDrive\Documents\CsEandeavours\Selenium
 
 driver = webdriver.Chrome(ChromeDriverManager().install())
 domain = "https://www.takealot.com"
-url = "https://www.takealot.com/all?_sb=1&_r=1&_si=dd428b313f4ff686a4a5b5cd7dc34a50&qsearch="
+# url = "https://www.takealot.com/all?_sb=1&_r=1&_si=dd428b313f4ff686a4a5b5cd7dc34a50&qsearch="
+
+#Get URL from file
+url=""
+try:
+    f = open("urlStore.txt", "r")
+    url = str(f.readline())
+    f.close()
+except Exception as e:
+    print(str(e))
 
 driver.get(url)
 res =driver.page_source
@@ -34,7 +43,9 @@ takealot = bs4.BeautifulSoup(res,'html.parser')
 
 iterator = 1
 allProducts = []
+onePageProducts = []
 aTags=[]
+pageUrl = url
 def scrollClick(n):
     global takealot
     global res
@@ -44,6 +55,8 @@ def scrollClick(n):
     global allProducts
     global aTags
     global iterator
+    global onePageProducts
+    global pageUrl
     for i in range(n):
         if (i==0):
             #Sponsored products
@@ -74,26 +87,34 @@ def scrollClick(n):
                     price = "Price unavailable"
                 # product = [name+"\n"+price]
                 product = [Product(name,price)]
-                allProducts += product
-                f = open("output.txt", "a")
-                f.write(name+" => "+"R"+price+"\n")
-                f.close()
+                onePageProducts += product
                 print("Product "+str(iterator)+ " added.")
                 iterator += 1
+
+            allProducts += onePageProducts
+            #Add every product in a page to the all products array
+            f = open("output.txt", "a")
+            for product in onePageProducts:
+                f.write(product.name+" => "+"R"+product.price+"\n")
+            f.close()
+            #Clean onepage products array
+            onePageProducts = []
+
         else:
             driver.get(url)
+            pageUrl = url
             res =driver.page_source
             takealot = bs4.BeautifulSoup(res,'html.parser')  
 
             #Scroll to bottom
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            # t.sleep(5)
 
             #Click
             WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button.button.ghost.search-listings-module_load-more_OwyvW"))).click()
             t.sleep(5)
             url = driver.current_url
             driver.get(url)
+            pageUrl = url
             res =driver.page_source
             takealot= bs4.BeautifulSoup(res,'html.parser')  
 
@@ -122,13 +143,30 @@ def scrollClick(n):
                     price = "Price unavailable"
                 # product = [name+"\n"+price]
                 product = [Product(name,price)]
-                allProducts += product
-                f = open("output.txt", "a")
-                f.write(name+" => "+"R"+price+"\n")
-                f.close()
+                onePageProducts += product
                 print("Product "+str(iterator)+ " added.")
                 iterator += 1
-scrollClick(1)
+
+            allProducts += onePageProducts
+
+            #Add every product in a page to the all products array
+            f = open("output.txt", "a")
+            for product in onePageProducts:
+                f.write(product.name+" => "+"R"+product.price+"\n")
+            f.close()
+            #Clean onepage products array
+            onePageProducts = []
+
+#Try it, if anything goes wrong, update url with the latest page so we don't have to restart scraping
+try:
+    scrollClick(3)
+except Exception as e:
+    print("\n"+str(e)+"\n")
+    print("\nUpdating url in url store...\n")
+    f = open("urlStore.txt", "w")
+    f.write(pageUrl)
+    f.close()
+
 print(str(len(allProducts))+" products added.")
 print(allProducts[len(allProducts)-1].toString())
 
