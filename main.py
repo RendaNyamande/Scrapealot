@@ -156,10 +156,16 @@ def scrollClick(n):
             f.close()
             #Clean onepage products array
             onePageProducts = []
+            #Update URl after each iteration
+            print("\nUpdating url in url store...\n")
+            f = open("urlStore1.txt", "w")
+            f.write(pageUrl)
+            f.close()
 
+print("#############################\n")
 #Try it, if anything goes wrong, update url with the latest page so we don't have to restart scraping
 try:
-    scrollClick(3)
+    scrollClick(139)
 except Exception as e:
     print("\n"+str(e)+"\n")
     print("\nUpdating url in url store...\n")
@@ -169,5 +175,6 @@ except Exception as e:
 
 print(str(len(allProducts))+" products added.")
 print(allProducts[len(allProducts)-1].toString())
+print("\n#############################")
 
 driver.close()
