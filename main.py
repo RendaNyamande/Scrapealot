@@ -154,6 +154,8 @@ def scrollClick(n):
             for product in onePageProducts:
                 f.write(product.name+" => "+"R"+product.price+"\n")
             f.close()
+            #Print page size
+            print("\nPage has "+str(len(onePageProducts))+"products.\n")
             #Clean onepage products array
             onePageProducts = []
             #Update URl after each iteration
@@ -165,7 +167,7 @@ def scrollClick(n):
 print("#############################\n")
 #Try it, if anything goes wrong, update url with the latest page so we don't have to restart scraping
 try:
-    scrollClick(141)
+    scrollClick(2)
 except Exception as e:
     print("\n"+str(e)+"\n")
     print("\nUpdating url in url store...\n")
