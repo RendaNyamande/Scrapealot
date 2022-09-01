@@ -58,7 +58,7 @@ def scrollClick(n):
     global onePageProducts
     global pageUrl
     for i in range(n):
-        if (i==0):
+        if (url == "https://www.takealot.com/all?_sb=1&_r=1&_si=dd428b313f4ff686a4a5b5cd7dc34a50&qsearch="):
             #Sponsored products
             aTags1 = takealot.findAll('a', attrs={'class':"product-anchor sponsored product-card-module_product-anchor_TUCBV"})
 
@@ -158,14 +158,14 @@ def scrollClick(n):
             onePageProducts = []
             #Update URl after each iteration
             print("\nUpdating url in url store...\n")
-            f = open("urlStore1.txt", "w")
+            f = open("urlStore.txt", "w")
             f.write(pageUrl)
             f.close()
 
 print("#############################\n")
 #Try it, if anything goes wrong, update url with the latest page so we don't have to restart scraping
 try:
-    scrollClick(139)
+    scrollClick(141)
 except Exception as e:
     print("\n"+str(e)+"\n")
     print("\nUpdating url in url store...\n")
