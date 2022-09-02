@@ -15,11 +15,12 @@ from selenium.webdriver.support import expected_conditions as EC
 import time as t
 
 class Product:
-    def __init__(self, name, price):
+    def __init__(self, name, price, productUrl):
         self.name = name
         self.price = price
+        self.productUrl = productUrl
     def toString(self):
-        return self.name+" => "+str(self.price)
+        return self.name+" => R"+str(self.price)+" => "+str(self.productUrl)
 
 os.environ['PATH'] += r"C:\Users\renda\OneDrive\Documents\CsEandeavours\SeleniumDrivers"
 # driver = webdriver.Chrome()
@@ -37,11 +38,25 @@ try:
 except Exception as e:
     print(str(e))
 
+try:
+    f = open("page#.txt", "r")
+    page = int(f.readline())
+    f.close()
+except Exception as e:
+    print(str(e))
+
+try:
+    f = open("product#.txt", "r")
+    iterator = int(f.readline())
+    f.close()
+except Exception as e:
+    print(str(e))
+
 driver.get(url)
 res =driver.page_source
 takealot = bs4.BeautifulSoup(res,'html.parser')  
 
-iterator = 1
+# iterator = 1
 allProducts = []
 onePageProducts = []
 aTags=[]
@@ -57,8 +72,11 @@ def scrollClick(n):
     global iterator
     global onePageProducts
     global pageUrl
+    global page
     for i in range(n):
         if (url == "https://www.takealot.com/all?_sb=1&_r=1&_si=dd428b313f4ff686a4a5b5cd7dc34a50&qsearch="):
+        # if (i == 0):
+            print("Page "+str(page)+"...\n")
             #Sponsored products
             aTags1 = takealot.findAll('a', attrs={'class':"product-anchor sponsored product-card-module_product-anchor_TUCBV"})
 
@@ -68,6 +86,8 @@ def scrollClick(n):
             for aTag in aTags:
                 url2 = aTag['href']
                 url2 = domain+url2
+                productUrl = url2
+                t.sleep(0.5)
                 driver.get(url2)
                 res =driver.page_source
                 takealot2= bs4.BeautifulSoup(res,'html.parser')  
@@ -86,21 +106,34 @@ def scrollClick(n):
                 if(price is None):
                     price = "Price unavailable"
                 # product = [name+"\n"+price]
-                product = [Product(name,price)]
+                product = [Product(name, price, productUrl)]
                 onePageProducts += product
                 print("Product "+str(iterator)+ " added.")
+                f = open("product#.txt", "w")
+                f.write(str(iterator))
+                f.close()
                 iterator += 1
 
             allProducts += onePageProducts
             #Add every product in a page to the all products array
             f = open("output.txt", "a")
             for product in onePageProducts:
-                f.write(product.name+" => "+"R"+product.price+"\n")
+                # f.write(product.name+" => "+"R"+product.price+"\n")
+                f.write(product.toString()+"\n")
+                # return self.name+" => R"+str(self.price)+" => "+str(self.productUrl)
+            f.close()
+            #Print page size
+            print("\nPage "+str(page)+" has "+str(len(onePageProducts))+" products.\n")
+            f = open("page#.txt", "w")
+            f.write(str(page))
             f.close()
             #Clean onepage products array
             onePageProducts = []
+            #update page number
+            page += 1
 
         else:
+            print("\nPage "+str(page)+"...\n")
             driver.get(url)
             pageUrl = url
             res =driver.page_source
@@ -124,6 +157,7 @@ def scrollClick(n):
             for aTag in aTags:
                 url2 = aTag['href']
                 url2 = domain+url2
+                productUrl = url2
                 driver.get(url2)
                 res =driver.page_source
                 takealot2= bs4.BeautifulSoup(res,'html.parser')  
@@ -142,9 +176,12 @@ def scrollClick(n):
                 if(price is None):
                     price = "Price unavailable"
                 # product = [name+"\n"+price]
-                product = [Product(name,price)]
+                product = [Product(name, price, productUrl)]
                 onePageProducts += product
                 print("Product "+str(iterator)+ " added.")
+                f = open("product#.txt", "w")
+                f.write(str(iterator))
+                f.close()
                 iterator += 1
 
             allProducts += onePageProducts
@@ -152,30 +189,43 @@ def scrollClick(n):
             #Add every product in a page to the all products array
             f = open("output.txt", "a")
             for product in onePageProducts:
-                f.write(product.name+" => "+"R"+product.price+"\n")
+                # f.write(product.name+" => "+"R"+product.price+"\n")
+                f.write(product.toString()+"\n")
             f.close()
             #Print page size
-            print("\nPage has "+str(len(onePageProducts))+"products.\n")
+            print("\nPage "+str(page)+" has "+str(len(onePageProducts))+" products.\n")
+            f = open("page#.txt", "w")
+            f.write(str(page))
+            f.close()
             #Clean onepage products array
             onePageProducts = []
-            #Update URl after each iteration
-            print("\nUpdating url in url store...\n")
+            #Update URl after each page
+            print("\nUpdating url in urlStore...\n")
             f = open("urlStore.txt", "w")
             f.write(pageUrl)
             f.close()
+            #update page number
+            page += 1
 
 print("#############################\n")
 #Try it, if anything goes wrong, update url with the latest page so we don't have to restart scraping
 try:
-    scrollClick(2)
+    scrollClick(10000)
+    f = open("page#.txt", "w")
+    f.write(str(page))
+    f.close()
 except Exception as e:
+    print("\nHo tanganana ###################\n")
     print("\n"+str(e)+"\n")
     print("\nUpdating url in url store...\n")
     f = open("urlStore.txt", "w")
     f.write(pageUrl)
     f.close()
+    f = open("page#.txt", "w")
+    f.write(str(page))
+    f.close()
 
-print(str(len(allProducts))+" products added.")
+print(str(len(allProducts))+" products added.\n")
 print(allProducts[len(allProducts)-1].toString())
 print("\n#############################")
 
