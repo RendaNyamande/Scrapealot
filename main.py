@@ -116,7 +116,7 @@ def scrollClick(n):
 
             allProducts += onePageProducts
             #Add every product in a page to the all products array
-            f = open("output.txt", "a")
+            f = open("computersAndTablets.txt", "a")
             for product in onePageProducts:
                 # f.write(product.name+" => "+"R"+product.price+"\n")
                 f.write(product.toString()+"\n")
@@ -187,7 +187,7 @@ def scrollClick(n):
             allProducts += onePageProducts
 
             #Add every product in a page to the all products array
-            f = open("output.txt", "a")
+            f = open("computersAndTablets.txt", "a")
             for product in onePageProducts:
                 # f.write(product.name+" => "+"R"+product.price+"\n")
                 f.write(product.toString()+"\n")
