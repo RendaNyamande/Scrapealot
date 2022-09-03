@@ -210,7 +210,7 @@ def scrollClick(n):
 print("#############################\n")
 #Try it, if anything goes wrong, update url with the latest page so we don't have to restart scraping
 try:
-    scrollClick(10000)
+    scrollClick(99999)
     f = open("page#.txt", "w")
     f.write(str(page))
     f.close()
@@ -224,6 +224,7 @@ except Exception as e:
     f = open("page#.txt", "w")
     f.write(str(page))
     f.close()
+    scrollClick(99999)
 
 print(str(len(allProducts))+" products added.\n")
 print(allProducts[len(allProducts)-1].toString())
